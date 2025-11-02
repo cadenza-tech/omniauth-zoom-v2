@@ -8,13 +8,11 @@ module OmniAuth
       USER_INFO_URL = 'https://api.zoom.us/v2/users/me'
 
       option :name, 'zoom_v2'
-
       option :client_options, {
         site: 'https://zoom.us',
         authorize_url: '/oauth/authorize',
         token_url: '/oauth/token'
       }
-
       option :authorize_options, [:scope, :state]
 
       uid { raw_info['id'] }
