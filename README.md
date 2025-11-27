@@ -38,7 +38,7 @@ Add the following to `config/initializers/devise.rb`:
 ```ruby
 # config/initializers/devise.rb
 Devise.setup do |config|
-  config.omniauth :zoom_v2, ENV['ZOOM_CLIENT_ID'], ENV['ZOOM_CLIENT_SECRET']
+  config.omniauth :zoom, ENV['ZOOM_CLIENT_ID'], ENV['ZOOM_CLIENT_SECRET']
 end
 ```
 
@@ -57,7 +57,7 @@ Add the OmniAuth configuration to your Devise model:
 class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
-         :omniauthable, omniauth_providers: [:zoom_v2]
+         :omniauthable, omniauth_providers: [:zoom]
 end
 ```
 
@@ -68,10 +68,10 @@ You can configure several options:
 ```ruby
 # config/initializers/devise.rb
 Devise.setup do |config|
-  config.omniauth :zoom_v2, ENV['ZOOM_CLIENT_ID'], ENV['ZOOM_CLIENT_SECRET'],
+  config.omniauth :zoom, ENV['ZOOM_CLIENT_ID'], ENV['ZOOM_CLIENT_SECRET'],
     {
       scope: 'user:read:user', # Specify OAuth scopes
-      callback_path: '/custom/zoom_v2/callback', # Custom callback path
+      callback_path: '/custom/zoom/callback', # Custom callback path
     }
 end
 ```
@@ -82,7 +82,7 @@ After successful authentication, the auth hash will be available in `request.env
 
 ```ruby
 {
-  provider: 'zoom_v2',
+  provider: 'zoom',
   uid: 'Wk9PTV9VU0VSX0lE',
   info: {
     name: 'Jane Dev',

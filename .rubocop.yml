@@ -37,7 +37,7 @@ Metrics/BlockLength:
   Enabled: true
   Exclude:
     - 'omniauth-zoom-v2.gemspec'
-    - 'spec/omniauth/strategies/zoom_v2_spec.rb'
+    - 'spec/omniauth/strategies/zoom_spec.rb'
 
 # https://docs.rubocop.org/rubocop/cops_metrics.html#metricsclasslength
 Metrics/ClassLength:
@@ -64,13 +64,6 @@ Naming/FileName:
   Enabled: true
   Exclude:
     - 'lib/omniauth-zoom-v2.rb'
-
-# https://docs.rubocop.org/rubocop/cops_naming.html#namingclassandmodulecamelcase
-Naming/ClassAndModuleCamelCase:
-  Enabled: true
-  Exclude:
-    - 'lib/omniauth/zoom_v2/version.rb'
-    - 'lib/omniauth/strategies/zoom_v2.rb'
 
 # https://docs.rubocop.org/rubocop/cops_naming.html#namingvariablenumber
 Naming/VariableNumber:
