@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-RSpec.describe OmniAuth::Strategies::ZoomV2 do # rubocop:disable RSpec/SpecFilePathFormat
+RSpec.describe OmniAuth::Strategies::Zoom do # rubocop:disable RSpec/SpecFilePathFormat
   let(:options) { {} }
   let(:strategy) { described_class.new('app', 'client_id', 'client_secret', options) }
 
   describe 'default options' do
     it 'has correct default values' do
-      expect(strategy.options.name).to eq('zoom_v2')
+      expect(strategy.options.name).to eq('zoom')
       expect(strategy.options.client_options.site).to eq('https://zoom.us')
       expect(strategy.options.client_options.authorize_url).to eq('/oauth/authorize')
       expect(strategy.options.client_options.token_url).to eq('/oauth/token')

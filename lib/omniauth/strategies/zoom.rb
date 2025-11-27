@@ -4,10 +4,10 @@ require 'omniauth-oauth2'
 
 module OmniAuth
   module Strategies
-    class ZoomV2 < OmniAuth::Strategies::OAuth2
+    class Zoom < OmniAuth::Strategies::OAuth2
       USER_INFO_URL = 'https://api.zoom.us/v2/users/me'
 
-      option :name, 'zoom_v2'
+      option :name, 'zoom'
       option :client_options, {
         site: 'https://zoom.us',
         authorize_url: '/oauth/authorize',
