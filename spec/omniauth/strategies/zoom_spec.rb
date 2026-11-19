@@ -417,7 +417,7 @@ RSpec.describe OmniAuth::Strategies::Zoom do # rubocop:disable RSpec/SpecFilePat
   describe '#authorize_params' do
     let(:request) { instance_double(Rack::Request, params: {}) }
 
-    before { allow(strategy).to receive_messages(request: request, session: {}) }
+    before { allow(strategy).to receive_messages(request: request, session: {}, full_host: 'https://example.com') }
 
     it 'includes response_type as code' do
       params = strategy.authorize_params
