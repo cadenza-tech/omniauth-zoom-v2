@@ -436,10 +436,18 @@ RSpec.describe OmniAuth::Strategies::Zoom do # rubocop:disable RSpec/SpecFilePat
     context 'with state in request params' do
       let(:request) { instance_double(Rack::Request, params: { 'state' => '12345abcde' }) }
 
-      it 'includes state in params and stores in session' do
+      it 'includes state in params' do
         params = strategy.authorize_params
         expect(params[:state]).to eq('12345abcde')
-        expect(strategy.session['omniauth.state']).to eq('12345abcde')
+      end
+    end
+
+    context 'with empty state in request params' do
+      let(:request) { instance_double(Rack::Request, params: { 'state' => '' }) }
+
+      it 'generates state' do
+        params = strategy.authorize_params
+        expect(params[:state]).to match(/\A\h{48}\z/)
       end
     end
   end
@@ -528,6 +536,54 @@ RSpec.describe OmniAuth::Strategies::Zoom do # rubocop:disable RSpec/SpecFilePat
 
     it 'returns false for objects that do not respond to empty?' do
       expect(strategy.send(:empty?, 123)).to be(false)
+    end
+  end
+
+  describe 'sign-in flow' do
+    let(:callback_env) { {} }
+    let(:app) do
+      session = {}
+      captured_env = callback_env
+      Rack::Builder.new do
+        use(Rack::Config) { |env| env['rack.session'] = session }
+        use OmniAuth::Builder do
+          provider :zoom, 'client_id', 'client_secret'
+        end
+        run ->(env) { [200, {}, []].tap { captured_env.update(env) } }
+      end
+    end
+
+    before do
+      allow(OmniAuth.config).to receive_messages(logger: Logger.new(IO::NULL), request_validation_phase: nil)
+      stub_request(:post, 'https://zoom.us/oauth/token')
+        .to_return(headers: { 'Content-Type' => 'application/json' }, body: { access_token: 'token' }.to_json)
+      stub_request(:get, 'https://api.zoom.us/v2/users/me')
+        .to_return(headers: { 'Content-Type' => 'application/json' }, body: { id: 'Wk9PTV9VU0VSX0lE' }.to_json)
+    end
+
+    def sign_in(request_params)
+      mock_request = Rack::MockRequest.new(app)
+      response = mock_request.post('/auth/zoom', params: request_params)
+      state = Rack::Utils.parse_query(URI(response['location']).query)['state']
+      mock_request.get('/auth/zoom/callback', params: { code: 'code', state: state })
+      state
+    end
+
+    it 'completes with a generated state' do
+      sign_in('origin' => '/back')
+
+      expect(callback_env['omniauth.auth'].uid).to eq('Wk9PTV9VU0VSX0lE')
+      expect(callback_env['omniauth.origin']).to eq('/back')
+    end
+
+    context 'with state in request params' do
+      it 'completes with the given state' do
+        state = sign_in('origin' => '/back', 'state' => 'custom-state')
+
+        expect(state).to eq('custom-state')
+        expect(callback_env['omniauth.auth'].uid).to eq('Wk9PTV9VU0VSX0lE')
+        expect(callback_env['omniauth.origin']).to eq('/back')
+      end
     end
   end
 end
